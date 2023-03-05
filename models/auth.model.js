@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
-// Création du schéma que doivent suivre les données d'authentification de l'utilisateur pour la base de données
+// Création du modèle que doivent suivre les données d'authentification de l'utilisateur pour la base de données
 const authSchema = mongoose.Schema(
     {
         email: {
             type: String,
             required: true,
-            unique: true
+            unique: true // l'email doit être unique
         },
         passeword: {
             type: String,

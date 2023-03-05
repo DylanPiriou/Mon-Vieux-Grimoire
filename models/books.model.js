@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-// Création du modèle que doivent suivre les livres pour la base de données
+// Création du modèle que doivent suivre les données des livres pour la base de données
 const bookSchema = mongoose.Schema(
     {
         userId: {
@@ -15,6 +15,10 @@ const bookSchema = mongoose.Schema(
             type: String,
             required: true
         },
+        imageUrl: {
+            type: String,
+            require: true
+        },
         year: {
             type: Number,
             required: true
@@ -23,17 +27,13 @@ const bookSchema = mongoose.Schema(
             type: String,
             required: true
         },
-        imageUrl: {
-            type: String,
-            require: true
-        },
-        allRatings: [
+        ratings: [
             {
                 userId: {
                     type: String,
                     required: true
                 },
-                score: {
+                grade: {
                     type: Number,
                     required: true
                 }
