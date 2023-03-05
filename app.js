@@ -9,12 +9,7 @@ const app = express();
 // Connexion à la base de données MongoDB
 connectDB();
 
-// Test
-app.use((req, res) => {
-    res.json({ message: 'Votre requête a bien été reçue !' }); 
- });
-
-// Gestion des routes
+// Gestion des routes pour l'authentification et les livres
 app.use("/api/auth/", authRoutes);
 app.use("/api/books/", booksRoutes);
 
