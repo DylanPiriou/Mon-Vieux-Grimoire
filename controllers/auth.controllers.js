@@ -1,5 +1,6 @@
 const authModel = require("../models/auth.model");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 // -------- CREATION DE LA LOGIQUE D'AUTHENTIFICATION -------- //
 
@@ -31,16 +32,23 @@ module.exports.logIn = async (req, res) => {
         if (user){
             // Mot de passe fourni = mot de passe enregirstré ?
             const passwordsMatch = await bcrypt.compare(password, user.password);
-            if(passwordsMatch){
-                res.status(200).json({ message: "Connexion réussie !" })
-            } else {
+            if(!passwordsMatch){
                 res.status(400).json({ message: "Mot de passe incorrect." })
             }
+            // Création du JWT
+            const userId = user._id;
+            const token = jwt.sign({ userId }, process.env.SECRET_KEY, {
+                expiresIn: "24h",
+              });
+            res.status(200).json({
+                userId,
+                token
+            })
         } else{
-            res.status(400).json({ message: "Informations utilisateur incorrectes." })
+            res.status(400).json({ message: "Les informations utilisateur sont incorrectes." })
         }
     }
     catch(error){
-        res.status(400).json({ error: "Une erreur est survenue." })
+        res.status(500).json({ error: "Une erreur est survenue." })
     }
 }
