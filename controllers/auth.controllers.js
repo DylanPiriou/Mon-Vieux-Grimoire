@@ -22,7 +22,7 @@ module.exports.signUp = async (req, res) => {
     }
 }
 
-// Reconnaître l'utilisateur
+// Reconnaître l'utilisateur et vérifier le mot de passe
 module.exports.logIn = async (req, res) => {
     const { email, password } = req.body;
     try{
@@ -30,8 +30,12 @@ module.exports.logIn = async (req, res) => {
         const user = await authModel.findOne({ email });
         if (user){
             // Mot de passe fourni = mot de passe enregirstré ?
-            await bcrypt.compare(password, user.password);
-            res.status(200).json({ message: "Connexion réussie !" })
+            const passwordsMatch = await bcrypt.compare(password, user.password);
+            if(passwordsMatch){
+                res.status(200).json({ message: "Connexion réussie !" })
+            } else {
+                res.status(400).json({ message: "Mot de passe incorrect." })
+            }
         } else{
             res.status(400).json({ message: "Informations utilisateur incorrectes." })
         }
