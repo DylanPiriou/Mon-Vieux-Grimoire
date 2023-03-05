@@ -1,5 +1,5 @@
 const booksModel = require("../models/books.model");
-const BooksModel = require("../models/books.model");
+
 
 // -------- CREATION DE LA LOGIQUE DU CRUD --------- //
 
@@ -13,22 +13,25 @@ module.exports.getBooks = async (req, res) => {
         res.status(400).json({ error : "Une erreur est survenue. Impossible de récupérer les livres."})
     }
 }
-// Récupérer un livre en fonction de son id
-module.exports.getBook = async (req, res) => {
-    try{
-        const book = await booksModel.findOne({_id: req.params.id});
-        res.status(200).json(book);
-    }
-    catch(error){
-        res.status(400).json({ error : `Impossible de récupérer le livre n°${req.params.id}`})
-    }
-}
 // Récupérer les 3 livres avec la meilleure note moyenne
 module.exports.getTopBooks = async (req, res) => {
     try{
+        const topBooks = await booksModel.find().sort({ averageRating: -1 }).limit(3);
+        res.status(200).json(topBooks);
     }
     catch(error){
         res.status(400).json({ error : "Une erreur est survenue."})
+    }
+}
+// Récupérer un livre en fonction de son id
+module.exports.getBook = async (req, res) => {
+    const bookId = req.params.id;
+    try{
+        const book = await booksModel.findOne(bookId);
+        res.status(200).json(book);
+    }
+    catch(error){
+        res.status(400).json({ error : `Impossible de récupérer le livre n°${bookId}`})
     }
 }
 // Ajouter un livre

@@ -4,8 +4,8 @@ const router = express.Router();
 
 // Pour chaque endpoint on associe une fonction qui vient du dossier controllers pour ajouter le logique
 router.get("/", getBooks);
-router.get("/:id", getBook);
 router.get("/bestrating", getTopBooks);
+router.get("/:id", getBook);
 router.post("/", createBook);
 router.put("/:id", updateBook);
 router.delete("/:id", deleteBook);
