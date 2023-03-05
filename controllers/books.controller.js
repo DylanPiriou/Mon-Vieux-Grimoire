@@ -1,7 +1,7 @@
 const booksModel = require("../models/books.model");
 
 
-// -------- CREATION DE LA LOGIQUE DU CRUD --------- //
+// -------- CREATION DE LA LOGIQUE DU CRUD POUR LES LIVRES --------- //
 
 // Récupérer tous les livres dans la base de données
 module.exports.getBooks = async (req, res) => {
@@ -27,7 +27,7 @@ module.exports.getTopBooks = async (req, res) => {
 module.exports.getBook = async (req, res) => {
     const bookId = req.params.id;
     try{
-        const book = await booksModel.findOne(bookId);
+        const book = await booksModel.findOne({ _id: bookId });
         res.status(200).json(book);
     }
     catch(error){
@@ -36,7 +36,12 @@ module.exports.getBook = async (req, res) => {
 }
 // Ajouter un livre
 module.exports.createBook = async (req, res) => {
-    res.json({ message : "le livre a été créé avec succès !"})
+    try{
+
+    }
+    catch{
+
+    }
 }
 // Modifier un livre
 module.exports.updateBook = async (req, res) => {
@@ -44,7 +49,14 @@ module.exports.updateBook = async (req, res) => {
 }
 // Supprimer un livre
 module.exports.deleteBook = async (req, res) => {
-    res.json({ message : "le livre a été supprimé avec succès !"})
+    const bookId = req.params.id;
+    try{
+        const book = await booksModel.findOne(bookId);
+        const userId = await booksModel.userId;
+    }
+    catch{
+
+    }
 }
 // Ajouter une note à un livre
 module.exports.addRating = async (req, res) => {
