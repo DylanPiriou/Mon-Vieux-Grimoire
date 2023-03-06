@@ -6,13 +6,12 @@ const jwt = require("jsonwebtoken");
 
 // Créer l'utilisateur
 module.exports.signUp = async (req, res) => {
-    const { email, password } = req.body
     try {
         // Cryptage du mot de passe avec la méthode hash() fournie par bcrypt
-        const cryptedPassword = await bcrypt.hash(password, 10) // 10 = compléxité
+        const cryptedPassword = await bcrypt.hash(req.body.password, 10) // 10 = compléxité
         // Création d'un nouvel utilisateur avec mot de passe crypté
         const user = new authModel({
-            email,
+            email: req.body.email,
             password: cryptedPassword
         });
         await user.save();
@@ -25,7 +24,8 @@ module.exports.signUp = async (req, res) => {
 
 // Reconnaître l'utilisateur et vérifier le mot de passe
 module.exports.logIn = async (req, res) => {
-    const { email, password } = req.body
+    const { email, password } = req.body;
+    console.log(req.body)
     try {
         // Mail unique. Recherche de l'utilisateur grâce au mail
         const user = await authModel.findOne({ email });

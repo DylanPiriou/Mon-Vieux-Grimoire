@@ -8,7 +8,7 @@ const authSchema = mongoose.Schema(
             required: true,
             unique: true // l'email doit être unique
         },
-        passeword: {
+        password: {
             type: String,
             required: true
         }
