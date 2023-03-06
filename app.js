@@ -6,6 +6,7 @@ const authRoutes = require("./routes/auth");
 const booksRoutes = require("./routes/books");
 
 const app = express();
+// Middleware qui analyse le corps des requêtes HTTP et les transforme en objet JS
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
