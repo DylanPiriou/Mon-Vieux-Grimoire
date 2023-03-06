@@ -6,8 +6,8 @@ const jwt = require("jsonwebtoken");
 
 // Créer l'utilisateur
 module.exports.signUp = async (req, res) => {
-    const { email, password } = req.body;
-    try{
+    const { email, password } = req.body
+    try {
         // Cryptage du mot de passe avec la méthode hash() fournie par bcrypt
         const cryptedPassword = await bcrypt.hash(password, 10) // 10 = compléxité
         // Création d'un nouvel utilisateur avec mot de passe crypté
@@ -18,37 +18,37 @@ module.exports.signUp = async (req, res) => {
         await user.save();
         res.status(200).json({ message: "Utilisateur créé avec succès !" })
     }
-    catch(error){
+    catch (error) {
         res.status(400).json({ error: "Une erreur est survenue." })
     }
 }
 
 // Reconnaître l'utilisateur et vérifier le mot de passe
 module.exports.logIn = async (req, res) => {
-    const { email, password } = req.body;
-    try{
+    const { email, password } = req.body
+    try {
         // Mail unique. Recherche de l'utilisateur grâce au mail
         const user = await authModel.findOne({ email });
-        if (user){
+        if (user) {
             // Mot de passe fourni = mot de passe enregirstré ?
             const passwordsMatch = await bcrypt.compare(password, user.password);
-            if(!passwordsMatch){
+            if (!passwordsMatch) {
                 res.status(400).json({ message: "Mot de passe incorrect." })
             }
             // Création du JWT
             const userId = user._id;
             const token = jwt.sign({ userId }, process.env.SECRET_KEY, {
                 expiresIn: "24h",
-              });
+            });
             res.status(200).json({
                 userId,
                 token
             })
-        } else{
+        } else {
             res.status(400).json({ message: "Les informations utilisateur sont incorrectes." })
         }
     }
-    catch(error){
+    catch (error) {
         res.status(500).json({ error: "Une erreur est survenue." })
     }
 }
