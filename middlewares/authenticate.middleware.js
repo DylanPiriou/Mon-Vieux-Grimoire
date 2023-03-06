@@ -2,14 +2,18 @@ const jwt = require("jsonwebtoken");
 
 // Vérifie si le token d'authentification est ok
 module.exports.authenticate = (req, res, next) => {
-    // Vérifie si le token existe et enlève "Bearer"
-    const token = req.headers.authorization && req.headers.authorization.split(" ")[1];
-    !token && res.status(401).json({ error : "Le token n'a pas été trouvé" });
     try{
+        // Enlève "Bearer" pour ne récupérer que le token
+        const token = req.headers.authorization.split(" ")[1];
+        !token && res.status(401).json({ error : "Le token n'a pas été trouvé" });
         // Vérifie le JWT
-        jwt.verify(token, process.env.SECRET_KEY);
-        console.log(decoded);
-        req.user = decoded;
+        const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
+        console.log(decodedToken);
+        // Extrait l'id de l'utilisateur à partir du token décodé
+        const userId = decodedToken.userId;
+        req.auth = {
+            userId
+        };
         next();
     }
     catch (error) {

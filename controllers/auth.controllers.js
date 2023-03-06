@@ -20,7 +20,7 @@ module.exports.signUp = async (req, res) => {
         res.status(200).json({ message: "Utilisateur créé avec succès !" })
     }
     catch (error) {
-        res.status(400).json({ error: "Une erreur est survenue." })
+        res.status(500).json({ error: "Une erreur est survenue." })
     }
 }
 
@@ -48,7 +48,7 @@ module.exports.logIn = async (req, res) => {
                 token
             })
         } else {
-            res.status(400).json({ message: "Les informations utilisateur sont incorrectes." })
+            res.status(401).json({ message: "Les informations utilisateur sont incorrectes." })
         }
     }
     catch (error) {
