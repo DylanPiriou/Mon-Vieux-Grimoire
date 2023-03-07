@@ -5,7 +5,7 @@ module.exports.authenticate = (req, res, next) => {
     try{
         // Enlève "Bearer" pour ne récupérer que le token
         const token = req.headers.authorization.split(" ")[1];
-        // Si le token n'existe pas ou est vide
+        // Vérifie si le token n'existe pas ou est vide
         if(!token) return res.status(401).json({ error : "Le token n'a pas été trouvé" });
         // Vérifie le JWT
         const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
