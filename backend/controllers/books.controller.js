@@ -10,7 +10,7 @@ module.exports.getBooks = async (req, res) => {
         res.status(200).json(books);
     }
     catch(error){
-        res.status(400).json({ error : "Une erreur est survenue. Impossible de récupérer les livres."})
+        res.status(400).json({ error: process.env.DEV_MODE === "dev" ? error : "Une erreur est survenue. Impossible de récupérer les livres."})
     }
 }
 // Récupérer les 3 livres avec la meilleure note moyenne
@@ -20,7 +20,7 @@ module.exports.getTopBooks = async (req, res) => {
         res.status(200).json(topBooks);
     }
     catch(error){
-        res.status(400).json({ error : "Une erreur est survenue."})
+        res.status(400).json({ error: process.env.DEV_MODE === "dev" ? error : "Une erreur est survenue."})
     }
 }
 // Récupérer un livre en fonction de son id
@@ -31,7 +31,7 @@ module.exports.getBook = async (req, res) => {
         res.status(200).json(book);
     }
     catch(error){
-        res.status(400).json({ error : `Impossible de récupérer le livre n°${bookId}`})
+        res.status(400).json({ error: process.env.DEV_MODE === "dev" ? error : `Impossible de récupérer le livre n°${bookId}`})
     }
 }
 // Ajouter un livre
