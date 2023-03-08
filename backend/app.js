@@ -5,6 +5,7 @@ const connectDB = require('./config/mongo');
 const dotenv = require("dotenv").config();
 const authRoutes = require("./routes/auth");
 const booksRoutes = require("./routes/books");
+const path = require("path");
 
 const app = express();
 // Middleware qui analyse le corps des requêtes HTTP et les transforme en objet JS
@@ -19,5 +20,6 @@ connectDB();
 // Gestion des routes pour l'authentification et les livres
 app.use("/api/auth/", authRoutes);
 app.use("/api/books/", booksRoutes);
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 module.exports = app;
