@@ -1,5 +1,6 @@
 const booksModel = require("../models/books.model");
 const fs = require("fs");
+const { calcAverageRating } = require("../utils/averageRating");
 
 
 // -------- CREATION DE LA LOGIQUE DU CRUD POUR LES LIVRES --------- //
@@ -13,7 +14,8 @@ module.exports.getBooks = async (req, res) => {
     catch (error) {
         res.status(400).json({ error: process.env.DEV_MODE === "dev" ? error : "Une erreur est survenue. Impossible de récupérer les livres." })
     }
-}
+};
+
 // Récupérer les 3 livres avec la meilleure note moyenne
 module.exports.getTopBooks = async (req, res) => {
     try {
@@ -21,7 +23,7 @@ module.exports.getTopBooks = async (req, res) => {
         res.status(200).json(topBooks);
     }
     catch (error) {
-        res.status(400).json({ error: process.env.DEV_MODE === "dev" ? error : "Une erreur est survenue." })
+        res.status(400).json({ error: process.env.DEV_MODE === "dev" ? error : "Une erreur est survenue." });
     }
 }
 // Récupérer un livre en fonction de son id
@@ -32,9 +34,10 @@ module.exports.getBook = async (req, res) => {
         res.status(200).json(book);
     }
     catch (error) {
-        res.status(400).json({ error: process.env.DEV_MODE === "dev" ? error : `Impossible de récupérer le livre n°${bookId}` })
+        res.status(400).json({ error: process.env.DEV_MODE === "dev" ? error : `Impossible de récupérer le livre n°${bookId}` });
     }
-}
+};
+
 // Ajouter un livre
 module.exports.createBook = (req, res) => {
     const bookObject = JSON.parse(req.body.book);
@@ -49,7 +52,7 @@ module.exports.createBook = (req, res) => {
     book.save()
         .then(() => res.status(201).json({ message: "Livre enregistré." }))
         .catch(error => res.status(400).json({ error }))
-}
+};
 
 // Modifier un livre
 module.exports.updateBook = (req, res) => {
@@ -72,10 +75,11 @@ module.exports.updateBook = (req, res) => {
                     .catch(error => res.status(401).json({ error }));
             }
         })
-}
+};
+
 // Supprimer un livre
 module.exports.deleteBook = (req, res) => {
-    // Recherche 'lid du livre à supprimer dans la base de données
+    // Recherche l'id du livre à supprimer dans la base de données
     booksModel.findOne({ _id: req.params.id })
         .then(book => {
             // Vérifie si l'userId du livre correspond à celui qui fait la requête
@@ -84,6 +88,7 @@ module.exports.deleteBook = (req, res) => {
             } else {
                 // Récupère le nom du fichier
                 const filename = book.imageUrl.split("/images/")[1];
+                // Supprime le fichier
                 fs.unlink(`images/${filename}`, () => {
                     // Supprime le livre de la base de données
                     booksModel.deleteOne({ _id: req.params.id })
@@ -93,7 +98,36 @@ module.exports.deleteBook = (req, res) => {
             }
         })
 };
+
 // Ajouter une note à un livre
-module.exports.addRating = async (req, res) => {
-    res.json({ message: "le livre a été noté avec succès !" })
+module.exports.addRating = (req, res) => {
+    // Vérifie l'utilisateur
+    if(req.body.userId !== req.auth.userId){
+        res.status(401).json({ error: "Non autorisé à ajouter une note." });
+    }
+
+    // Recherche le livre à noter en fonction de son id
+    booksModel.findOne({ _id: req.params.id })
+        .then(book => {
+            // Vérifie si l'utilisateur n'a pas déjà noté le livre
+            if(book.ratings.find(rating => rating.userId === req.body.userId)){
+                res.status(401).json({ error : "Livre déjà noté par l'utilisateur." })
+            } else {
+                // Pousse les nouvelles données dans le tableau
+                const cloneBook = book;
+                cloneBook.ratings.push({
+                    userId: req.auth.userId,
+                    grade: req.body.rating,
+                    _id: req.body._id
+                });
+                // Calcule la moyenne
+                cloneBook.averageRating = calcAverageRating(book.ratings);
+                console.log(cloneBook.averageRating)
+                // Met à jour la base de données
+                booksModel.updateOne({ _id: req.params.id }, { ...cloneBook})
+                    .then(() => res.status(201).json(book))
+                    .catch(error => res.status(401).json({ error }))
+            }
+        })
+        .catch(error => res.status(401).json({ error }));
 }
