@@ -46,13 +46,29 @@ module.exports.createBook = (req, res) => {
         imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
         });
     book.save()
-    .then(() => res.status(201).json({ message: "Objet enregistré."}))
+    .then(() => res.status(201).json({ message: "Livre enregistré."}))
     .catch(error => res.status(400).json({ error }))
 }
 
 // Modifier un livre
-module.exports.updateBook = async (req, res) => {
-    res.json({ message : "le livre a été modifié avec succès !"})
+module.exports.updateBook = (req, res) => {
+    // Vérifie si il y a un fichier
+    const bookObject = req.file ? {
+        ...JSON.parse(req.body.book),
+        imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
+    } : { ...req.body};
+    delete bookObject._userId;
+    // Recherche le livre en fonction de l'id dans la base de données
+    booksModel.findOne({ _id: req.params.id })
+    .then(book => {
+        if(book.userId !== req.auth.userId){
+            res.status(401).json({ message: "Non autorisé à modifier ce livre." });
+        } else {
+            booksModel.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
+            .then(() => res.status(201).json({ message: "Le livre a été modifié avec succès !" }))
+            .catch(error => res.status(401).json({ error }));
+        }
+    })
 }
 // Supprimer un livre
 module.exports.deleteBook = async (req, res) => {
