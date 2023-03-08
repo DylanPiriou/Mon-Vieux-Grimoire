@@ -20,7 +20,7 @@ module.exports.signUp = async (req, res) => {
         res.status(200).json({ message: "Utilisateur créé avec succès !" })
     }
     catch (error) {
-        res.status(500).json({ error: "Une erreur est survenue." })
+        res.status(500).json({ error: process.env.DEV_MODE === "dev" ? error: "Une erreur est survenue." })
     }
 }
 
