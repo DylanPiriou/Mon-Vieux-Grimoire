@@ -101,33 +101,75 @@ module.exports.deleteBook = (req, res) => {
 
 // Ajouter une note à un livre
 module.exports.addRating = (req, res) => {
-    // Vérifie l'utilisateur
-    if(req.body.userId !== req.auth.userId){
-        res.status(401).json({ error: "Non autorisé à ajouter une note." });
-    }
+    const user = req.body.userId;
 
-    // Recherche le livre à noter en fonction de son id
-    booksModel.findOne({ _id: req.params.id })
-        .then(book => {
-            // Vérifie si l'utilisateur n'a pas déjà noté le livre
-            if(book.ratings.find(rating => rating.userId === req.body.userId)){
-                res.status(401).json({ error : "Livre déjà noté par l'utilisateur." })
-            } else {
-                // Pousse les nouvelles données dans le tableau
-                const cloneBook = book;
-                cloneBook.ratings.push({
-                    userId: req.auth.userId,
-                    grade: req.body.rating,
-                    _id: req.body._id
-                });
-                // Calcule la moyenne
-                cloneBook.averageRating = calcAverageRating(book.ratings);
-                console.log(cloneBook.averageRating)
-                // Met à jour la base de données
-                booksModel.updateOne({ _id: req.params.id }, { ...cloneBook})
-                    .then(() => res.status(201).json(book))
-                    .catch(error => res.status(401).json({ error }))
-            }
-        })
-        .catch(error => res.status(401).json({ error }));
+    // Vérifie l'utilisateur
+    if (user !== req.auth.userId) {
+        res.status(401).json({ error: "Non autorisé à ajouter une note." });
+    } else {
+        const bookId = req.params.id;
+
+        // Recherche le livre à noter en fonction de son id
+        booksModel.findOne({ _id: bookId })
+            .then(book => {
+                // Vérifie si l'utilisateur n'a pas déjà noté le livre
+                if (book.ratings.find(rating => rating.userId === user)) {
+                    res.status(401).json({ error: "Impossible de noter ce livre une deuxième fois." })
+                } else {
+                    // Définit la nouvelle note
+                    const newRating = { userId: user, grade: req.body.rating, _id: req.body._id };
+                    // Ajoute la note au tableau ratings
+                    const updatedRatings = [ ...book.ratings, newRating];
+                    // Calcule la note moyenne
+                    const updatedAverageRating = calcAverageRating(updatedRatings);
+
+                    // Actualise dans la base de données
+                    booksModel.updateOne({ _id: req.params.id }, { _id: req.params.id }, { ratings: updatedRatings, averageRating: updatedAverageRating })
+                        .then(() => {
+                            const updatedBook = { ...book.toObject(), ratings: updatedRatings, averageRating: updatedAverageRating };
+                            res.status(201).json(updatedBook);
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            res.status(500).json({ error: "Une erreur est survenue" });
+                        });
+
+                }
+            })
+            .catch(error => console.log(error));
+    }
 }
+
+// module.exports.addRating = (req, res, next) => {
+//     const newRating = req.body;
+//     if (newRating.userId != req.auth.userId) {
+//         res.status(401).json({ message: "Not authorized" });
+//     }
+//     booksModel.findOne({ _id: req.params.id })
+//         .then((book) => {
+//             if (book.ratings.find((rating) => rating.userId === newRating.userId)) {
+//                 res.status(400).json({ error: "Vous avez déjà noté ce livre" });
+//             } else {
+//                 const newBook = book;
+//                 newBook.ratings.push({ userId: newRating.userId, grade: newRating.rating, _id: newRating._id });
+//                 newBook.averageRating = calcAverageRating(book.ratings);
+
+//                 booksModel.updateOne({ _id: req.params.id }, { ratings: newBook.ratings, averageRating: newBook.averageRating })
+//                     .then(() => res.status(201).json(newBook))
+//                     .catch((error) => {
+//                         console.log(error);
+//                         {
+//                             console.log(error);
+//                             res.status(400).json({ error: "Une erreur est survenue" });
+//                         }
+//                     });
+//             }
+//         })
+//         .catch((error) => {
+//             console.log(error);
+//             {
+//                 console.log(error);
+//                 res.status(400).json({ error: "Une erreur est survenue" });
+//             }
+//         });
+// };
