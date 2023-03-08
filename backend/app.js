@@ -6,6 +6,7 @@ const dotenv = require("dotenv").config();
 const authRoutes = require("./routes/auth");
 const booksRoutes = require("./routes/books");
 const path = require("path");
+const helmet = require('helmet');
 
 const app = express();
 // Middleware qui analyse le corps des requêtes HTTP et les transforme en objet JS
@@ -13,6 +14,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 // Gère les erreurs CORS
 app.use(cors());
+// Protection de l'API
+// https://github.com/helmetjs/helmet
+app.use(helmet());
 
 // Connexion à la base de données MongoDB
 connectDB();
