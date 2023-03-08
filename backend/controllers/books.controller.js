@@ -139,37 +139,3 @@ module.exports.addRating = (req, res) => {
             .catch(error => console.log(error));
     }
 }
-
-// module.exports.addRating = (req, res, next) => {
-//     const newRating = req.body;
-//     if (newRating.userId != req.auth.userId) {
-//         res.status(401).json({ message: "Not authorized" });
-//     }
-//     booksModel.findOne({ _id: req.params.id })
-//         .then((book) => {
-//             if (book.ratings.find((rating) => rating.userId === newRating.userId)) {
-//                 res.status(400).json({ error: "Vous avez déjà noté ce livre" });
-//             } else {
-//                 const newBook = book;
-//                 newBook.ratings.push({ userId: newRating.userId, grade: newRating.rating, _id: newRating._id });
-//                 newBook.averageRating = calcAverageRating(book.ratings);
-
-//                 booksModel.updateOne({ _id: req.params.id }, { ratings: newBook.ratings, averageRating: newBook.averageRating })
-//                     .then(() => res.status(201).json(newBook))
-//                     .catch((error) => {
-//                         console.log(error);
-//                         {
-//                             console.log(error);
-//                             res.status(400).json({ error: "Une erreur est survenue" });
-//                         }
-//                     });
-//             }
-//         })
-//         .catch((error) => {
-//             console.log(error);
-//             {
-//                 console.log(error);
-//                 res.status(400).json({ error: "Une erreur est survenue" });
-//             }
-//         });
-// };
