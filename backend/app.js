@@ -16,7 +16,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 // Protection de l'API
 // https://github.com/helmetjs/helmet
-app.use(helmet());
+app.use(
+    helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'"],
+      imgSrc: ["'self'", 'data:'],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+    },
+  }));
 
 // Connexion à la base de données MongoDB
 connectDB();
