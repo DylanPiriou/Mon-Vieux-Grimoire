@@ -124,16 +124,22 @@ module.exports.addRating = (req, res) => {
                     const updatedAverageRating = calcAverageRating(updatedRatings);
 
                     // Actualise dans la base de données
-                    booksModel.updateOne({ _id: req.params.id }, { _id: req.params.id }, { ratings: updatedRatings, averageRating: updatedAverageRating })
-                        .then(() => {
-                            const updatedBook = { ...book.toObject(), ratings: updatedRatings, averageRating: updatedAverageRating };
+                    booksModel.findOneAndUpdate(
+                        { _id: bookId, "ratings.userId": { $ne: user } },
+                        { $push: { ratings: newRating }, averageRating: updatedAverageRating },
+                        { new: true } // Renvoie le document à jour
+                    )
+                    .then(updatedBook => {
+                        if (updatedBook) {
                             res.status(201).json(updatedBook);
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                            res.status(500).json({ error: "Une erreur est survenue" });
-                        });
-
+                        } else {
+                            res.status(401).json({ error: "Impossible de noter ce livre une deuxième fois." })
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                        res.status(500).json({ error: "Une erreur est survenue" });
+                    });
                 }
             })
             .catch(error => console.log(error));
