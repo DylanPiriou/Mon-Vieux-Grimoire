@@ -36,7 +36,7 @@ module.exports.logIn = async (req, res) => {
             // Mot de passe fourni = mot de passe enregirstré ?
             const passwordsMatch = await bcrypt.compare(password, user.password);
             if (!passwordsMatch) {
-                res.status(400).json({ message: "Mot de passe incorrect." })
+                return res.status(400).json({ message: "Mot de passe incorrect." });
             }
             // Création du JWT
             const userId = user._id;

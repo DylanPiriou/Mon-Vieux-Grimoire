@@ -9,7 +9,7 @@ module.exports.emailValidator = (req, res, next) => {
         next();
     } else {
         console.log("L'email n'est pas valide.");
-        res.status(400).json({ error : "Le format de l'email est invalide." });
+        return res.status(400).json({ error : "Le format de l'email est invalide." });
     }
 }
 

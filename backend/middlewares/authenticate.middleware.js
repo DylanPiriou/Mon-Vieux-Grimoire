@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken");
 
 // Vérifie si le token d'authentification est ok
 module.exports.authenticate = (req, res, next) => {
+    // Reset de req.auth
+    req.auth = null;
     try{
         // Enlève "Bearer" pour ne récupérer que le token
         const token = req.headers.authorization.split(" ")[1];
@@ -21,3 +23,5 @@ module.exports.authenticate = (req, res, next) => {
         console.log(error);
         res.status(401).json({ error: process.env.DEV_MODE === "dev" ? error : "Le token n'est pas valide." })
     }};
+
+    // Vérifier qu'il y une "authorization" dans le header et il y a un bearer
