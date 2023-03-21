@@ -17,7 +17,7 @@ module.exports.signUp = async (req, res) => {
             password: cryptedPassword
         });
         await user.save();
-        res.status(200).json({ message: "Utilisateur créé avec succès !" })
+        res.status(201).json({ message: "Utilisateur créé avec succès !" })
     }
     catch (error) {
         res.status(500).json({ error: process.env.DEV_MODE === "dev" ? error: "Une erreur est survenue." })
@@ -36,7 +36,7 @@ module.exports.logIn = async (req, res) => {
             // Mot de passe fourni = mot de passe enregirstré ?
             const passwordsMatch = await bcrypt.compare(password, user.password);
             if (!passwordsMatch) {
-                return res.status(400).json({ message: "Mot de passe incorrect." });
+                return res.status(401).json({ message: "Mot de passe incorrect." });
             }
             // Création du JWT
             const userId = user._id;
@@ -52,6 +52,6 @@ module.exports.logIn = async (req, res) => {
         }
     }
     catch (error) {
-        res.status(500).json({ error: "Une erreur est survenue." })
+        res.status(500).json({ error: process.env.DEV_MODE === "dev" ? error: "Une erreur est survenue." })
     }
 }

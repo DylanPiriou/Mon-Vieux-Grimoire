@@ -9,11 +9,11 @@ const MIME_TYPES = {
 
 // Objet de configuration pour multer
 const storage = multer.diskStorage({
-    // Paramètrage de la destination
+  // Paramètrage de la destination
   destination: (req, file, callback) => {
     callback(null, 'images');
   },
-    // Paramètrage du nom du fichier
+  // Paramètrage du nom du fichier
   filename: (req, file, callback) => {
     const name = file.originalname.split(' ').join('_');
     const extension = MIME_TYPES[file.mimetype];

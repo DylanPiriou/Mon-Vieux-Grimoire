@@ -8,7 +8,7 @@ module.exports.authenticate = (req, res, next) => {
         // Enlève "Bearer" pour ne récupérer que le token
         const token = req.headers.authorization.split(" ")[1];
         // Vérifie si le token n'existe pas ou est vide
-        if(!token) return res.status(401).json({ error : "Le token n'a pas été trouvé" });
+        if(!token) return res.status(401).json({ error : "Une erreur est survenue. Token introuvable ou non valide."  });
         // Vérifie le JWT
         const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
         console.log(decodedToken);
@@ -21,7 +21,5 @@ module.exports.authenticate = (req, res, next) => {
     }
     catch (error) {
         console.log(error);
-        res.status(401).json({ error: process.env.DEV_MODE === "dev" ? error : "Le token n'est pas valide." })
+        res.status(401).json({ error })
     }};
-
-    // Vérifier qu'il y une "authorization" dans le header et il y a un bearer

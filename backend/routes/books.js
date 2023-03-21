@@ -4,7 +4,7 @@ const { authenticate } = require("../middlewares/authenticate.middleware");
 const multer = require("../middlewares/multer-config");
 const router = express.Router();
 
-// Pour chaque endpoint on associe une fonction qui vient du dossier controllers pour ajouter la logique + middleware(s) pour certaines
+// Pour chaque endpoint on associe une fonction qui vient du dossier controllers pour ajouter la logique + middleware(s)
 router.get("/bestrating", getTopBooks);
 router.get("/:id", getBook);
 router.get("/", getBooks);

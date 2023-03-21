@@ -72,7 +72,7 @@ module.exports.updateBook = (req, res) => {
                 // Modifier les données du livre dans la base de données
                 booksModel.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
                     .then(() => res.status(201).json({ message: "Le livre a été modifié avec succès !" }))
-                    .catch(error => res.status(401).json({ error }));
+                    .catch(error => res.status(400).json({ error }));
             }
         })
 };
@@ -93,7 +93,7 @@ module.exports.deleteBook = (req, res) => {
                     // Supprime le livre de la base de données
                     booksModel.deleteOne({ _id: req.params.id })
                         .then(() => res.status(201).json({ message: "Le livre a été supprimé avec succès !" }))
-                        .catch(error => res.status(401).json({ error }));
+                        .catch(error => res.status(400).json({ error }));
                 })
             }
         })
