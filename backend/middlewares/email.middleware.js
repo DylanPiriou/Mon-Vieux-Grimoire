@@ -9,7 +9,7 @@ module.exports.emailValidator = (req, res, next) => {
         next();
     } else {
         console.log("L'email n'est pas valide.");
-        return res.status(400).json({ error: process.env.DEV_MODE === "dev" ? error : "Le format de l'email est invalide." });
+        return res.status(400).json({ error: "Le format de l'email est invalide." });
     }
 }
 
@@ -20,9 +20,9 @@ module.exports.emailUnique = async (req, res, next) => {
         const isEmailExist = await authModel.findOne({ email });
         if(isEmailExist){
             console.log("L'email est déjà utilisé.");
-            return res.status(400).json({ error: process.env.DEV_MODE === "dev" ? error: "Adresse mail déjà utilisée."})
+            return res.status(400).json({ error : "L'email est déjà utilisé." })
         }
-        next();
+            next();
     }
     catch (error) {
         console.log(error)
